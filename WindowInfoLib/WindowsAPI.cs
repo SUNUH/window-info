@@ -7,8 +7,6 @@ using System.Collections.Generic;
 public static class WindowsAPI
 {
 
-    private const int SRCCOPY = 13369376;
-
     [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
     public static extern int GetWindowTextLength(IntPtr handle);
 
@@ -27,38 +25,31 @@ public static class WindowsAPI
 
     [DllImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
-    public static extern bool PrintIWindow(IntPtr handle, IntPtr hDC, uint flags);
+    public static extern bool PrintWindow(IntPtr handle, IntPtr hDC, uint flags);
 
     [DllImport("user32.dll")]
     public static extern IntPtr GetWindowDC(IntPtr handle);
     [DllImport("user32.dll")]
     public static extern IntPtr ReleaseDC(IntPtr handle, IntPtr dc);
 
-    [DllImport("user32.dll")]
-    private static extern int BitBlt(
-        IntPtr hDestDC,
-        int x,
-        int y,
-        int nWidth,
-        int nHeight,
-        IntPtr hSrcDC,
-        int xSrc,
-        int ySrc,
-        int dwRop
-        );
+    [DllImport("gdi32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    static extern bool BitBlt(IntPtr hdc, int nXDest, int nYDest, int nWidth, int nHeight,
+      IntPtr hdcSrc, int nXSrc, int nYSrc, TernaryRasterOperations dwRop);
 
     public static Bitmap CaptureTopLevelWindow(IntPtr handle)
     {
         WindowInfo wi = new WindowInfo();
+        wi.cbSize = Marshal.SizeOf(wi);
         GetWindowInfo(handle, ref wi);
-
+        
         int width = wi.rcWindow.right - wi.rcWindow.left;
-        int height = wi.rcWindow.bottom - wi.rcWindow.top;
+        int height = wi.rcWindow.top - wi.rcWindow.bottom;
 
         Bitmap img = new Bitmap(width, height);
         Graphics gra = Graphics.FromImage(img);
         IntPtr hdc = gra.GetHdc();
-        PrintIWindow(handle, hdc, 0);
+        PrintWindow(handle, hdc, 0);
         gra.ReleaseHdc(hdc);
         gra.Dispose();
 
@@ -71,15 +62,15 @@ public static class WindowsAPI
 
         IntPtr winDC = GetWindowDC(handle);
 
-        int width = wi.rcWindow.right = wi.rcWindow.left;
-        int height = wi.rcWindow.bottom = wi.rcWindow.top;
+        int width = wi.rcWindow.right - wi.rcWindow.left;
+        int height = wi.rcWindow.top - wi.rcWindow.bottom;
 
         Bitmap img = new Bitmap(width, height);
         Graphics gra = Graphics.FromImage(img);
 
         IntPtr hDC = gra.GetHdc();
 
-        BitBlt(hDC, 0, 0, img.Width, img.Height, winDC, 0, 0, SRCCOPY);
+        BitBlt(hDC, 0, 0, img.Width, img.Height, winDC, 0, 0, TernaryRasterOperations.SRCCOPY);
 
         gra.ReleaseHdc(hDC);
         gra.Dispose();
@@ -87,6 +78,26 @@ public static class WindowsAPI
         ReleaseDC(handle, winDC);
 
         return img;
+    }
+
+    enum TernaryRasterOperations : uint
+    {
+        SRCCOPY = 0x00CC0020,
+        SRCPAINT = 0x00EE0086,
+        SRCAND = 0x008800C6,
+        SRCINVERT = 0x00660046,
+        SRCERASE = 0x00440328,
+        NOTSRCCOPY = 0x00330008,
+        NOTSRCERASE = 0x001100A6,
+        MERGECOPY = 0x00C000CA,
+        MERGEPAINT = 0x00BB0226,
+        PATCOPY = 0x00F00021,
+        PATPAINT = 0x00FB0A09,
+        PATINVERT = 0x005A0049,
+        DSTINVERT = 0x00550009,
+        BLACKNESS = 0x00000042,
+        WHITENESS = 0x00FF0062,
+        CAPTUREBLT = 0x40000000
     }
 }
 
