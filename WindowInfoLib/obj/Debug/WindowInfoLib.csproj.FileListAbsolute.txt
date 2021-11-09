@@ -1,0 +1,6 @@
+C:\Users\shun\Documents\GitHub\window-info\WindowInfoLib\bin\Debug\WindowInfoLib.dll
+C:\Users\shun\Documents\GitHub\window-info\WindowInfoLib\bin\Debug\WindowInfoLib.pdb
+C:\Users\shun\Documents\GitHub\window-info\WindowInfoLib\obj\Debug\WindowInfoLib.csprojAssemblyReference.cache
+C:\Users\shun\Documents\GitHub\window-info\WindowInfoLib\obj\Debug\WindowInfoLib.csproj.CoreCompileInputs.cache
+C:\Users\shun\Documents\GitHub\window-info\WindowInfoLib\obj\Debug\WindowInfoLib.dll
+C:\Users\shun\Documents\GitHub\window-info\WindowInfoLib\obj\Debug\WindowInfoLib.pdb
