@@ -6,7 +6,6 @@ using System.Collections.Generic;
 
 public static class WindowsAPI
 {
-
     [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
     public static extern int GetWindowTextLength(IntPtr handle);
 
@@ -42,9 +41,9 @@ public static class WindowsAPI
         WindowInfo wi = new WindowInfo();
         wi.cbSize = Marshal.SizeOf(wi);
         GetWindowInfo(handle, ref wi);
-        
-        int width = wi.rcWindow.right - wi.rcWindow.left;
-        int height = wi.rcWindow.top - wi.rcWindow.bottom;
+
+        int width = wi.rcWindow.width;
+        int height = wi.rcWindow.height;
 
         Bitmap img = new Bitmap(width, height);
         Graphics gra = Graphics.FromImage(img);
@@ -62,8 +61,8 @@ public static class WindowsAPI
 
         IntPtr winDC = GetWindowDC(handle);
 
-        int width = wi.rcWindow.right - wi.rcWindow.left;
-        int height = wi.rcWindow.top - wi.rcWindow.bottom;
+        int width = wi.rcWindow.width;
+        int height = wi.rcWindow.height;
 
         Bitmap img = new Bitmap(width, height);
         Graphics gra = Graphics.FromImage(img);

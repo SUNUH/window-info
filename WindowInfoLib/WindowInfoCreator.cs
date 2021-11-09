@@ -31,12 +31,12 @@ public class WindowInfoCreator
 
         currentHierarchy++;
 
-        WindowsAPI.EnumChildWindows(parentHandle, GetChildren, IntPtr.Zero);
+        WindowsAPI.EnumChildWindows(parentHandle, new WindowsAPI.EnumWindowsDelegate(EnumWindowCallBack), new IntPtr(1));
 
         return windowInfos;
     }
 
-    private bool GetChildren(IntPtr handle, IntPtr lparam)
+    private bool EnumWindowCallBack(IntPtr handle, IntPtr lparam)
     {
         WindowInfo wi = new WindowInfo();
         WindowsAPI.GetWindowInfo(handle, ref wi);
@@ -50,7 +50,7 @@ public class WindowInfoCreator
         windowInfos.Add(wi);
 
         currentHierarchy++;
-        WindowsAPI.EnumChildWindows(handle, GetChildren, IntPtr.Zero);
+        WindowsAPI.EnumChildWindows(handle, EnumWindowCallBack, new IntPtr(1));
         currentHierarchy--;
 
         return true;
